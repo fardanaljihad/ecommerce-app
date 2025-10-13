@@ -1,16 +1,15 @@
 package com.example.ecommerce.model;
 
+import java.math.BigInteger;
 import java.util.Date;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,22 +19,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "payments")
+public class Payment {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String username;
-
-    @Column(nullable = false, length = 100)
-    private String password;
-
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private BigInteger amount;
+
+    @Column(nullable = false)
+    private PaymentMethod paymentMethod;
+
+    @Column(nullable = false)
+    private String status; // PENDING, SUCCESS, FAILED
 
     @Column(nullable = false)
     private Date createdAt;
@@ -43,6 +41,7 @@ public class User {
     @Column(nullable = true)
     private Date updatedAt;
 
-    @OneToMany(mappedBy = "user")
-    private List<Order> orders;
+    @OneToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private Order order;
 }
