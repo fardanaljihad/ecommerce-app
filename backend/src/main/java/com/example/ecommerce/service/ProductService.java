@@ -11,12 +11,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.ecommerce.dto.CreateProductRequest;
+import com.example.ecommerce.dto.OrderEvent;
 import com.example.ecommerce.dto.ProductResponse;
 import com.example.ecommerce.dto.SearchProductRequest;
 import com.example.ecommerce.dto.UpdateProductRequest;
@@ -34,6 +36,13 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     private final ValidationService validationService;
+
+    @KafkaListener(topics = "order-created", groupId = "product-group")
+    public void consume(OrderEvent event) {
+        System.out.println("<<< [PRODUCT/INVENTORY] Recevied event");
+        
+        // TODO
+    }
 
     public void create(CreateProductRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
