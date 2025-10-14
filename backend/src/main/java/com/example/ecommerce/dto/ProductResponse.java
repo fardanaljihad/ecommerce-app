@@ -1,5 +1,7 @@
 package com.example.ecommerce.dto;
 
+import java.math.BigInteger;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApiResponse<T> {
+public class ProductResponse {
     
-    private T data;
+    private Long id;
 
-    private PaginationResponse pagination;
+    private String name;
 
-    private String errors;
+    private BigInteger price;
+
+    private Integer stock;
 }

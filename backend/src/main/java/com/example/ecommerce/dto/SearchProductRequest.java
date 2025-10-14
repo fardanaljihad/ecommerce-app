@@ -1,5 +1,6 @@
 package com.example.ecommerce.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApiResponse<T> {
+public class SearchProductRequest {
     
-    private T data;
+    private String name;
 
-    private PaginationResponse pagination;
+    @NotNull
+    private Integer page;
 
-    private String errors;
+    @NotNull
+    private Integer size;
 }

@@ -1,5 +1,7 @@
 package com.example.ecommerce.service;
 
+import java.util.Date;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class UserService {
         user.setUsername(request.getUsername());
         user.setPassword(encoder.encode(request.getPassword()));
         user.setRole(Role.valueOf(request.getRole().toUpperCase()));
+        user.setCreatedAt(new Date());
 
         userRepository.save(user);
     }
