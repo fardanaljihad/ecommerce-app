@@ -56,7 +56,7 @@ public class ProductService {
 
         if (fullyReserved) {
             StockReservedEvent successEvent = new StockReservedEvent(
-                event.orderId(), event.userId(), event.amount(), event.orderLineItems());
+                event.orderId(), event.userId(), event.amount(), event.orderLineItems(), reservedStocks);
 
             kafkaTemplate.send("stock-reserved", successEvent);
         } else {

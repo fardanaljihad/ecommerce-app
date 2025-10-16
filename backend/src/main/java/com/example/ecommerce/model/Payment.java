@@ -5,6 +5,8 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,11 +31,12 @@ public class Payment {
     @Column(nullable = false)
     private BigInteger amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentMethod paymentMethod;
 
     @Column(nullable = false)
-    private String status; // PENDING, SUCCESS, FAILED
+    private String status; // PENDING, CANCELLED, SUCCESS, FAILED
 
     @Column(nullable = false)
     private Date createdAt;
