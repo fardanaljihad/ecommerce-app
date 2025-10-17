@@ -4,7 +4,7 @@
 
 The happy path order creation is as follows:
 
-1. `Order Service` creates a new Order in the CREATED state and publishes an `order-created` event.
+1. `Order Service` creates a new Order in the PENDING_APPROVAL state and publishes an `order-created` event.
 
 2. `Order Line Item Service` consumes the `order-created` event, extracts the list of products and quantities from the order payload, and persists them into the `Order Line Item Table`.
 
@@ -20,7 +20,7 @@ The happy path order creation is as follows:
 
 The failed order creation flow due to insufficient stock is as follows:
 
-1. `Order Service` creates a new Order in the CREATED state and publishes an `order-created` event.
+1. `Order Service` creates a new Order in the PENDING_APPROVAL state and publishes an `order-created` event.
 
 2. `Order Line Item Service` consumes the `order-created` event, extracts the list of products and quantities from the order payload, and persists them into the `Order Line Item Table`.
 
@@ -36,7 +36,7 @@ The failed order creation flow due to insufficient stock is as follows:
 
 The failed order creation flow due to payment authorization failure is as follows:
 
-1. `Order Service` creates a new Order in the CREATED state and publishes an `order-created` event.
+1. `Order Service` creates a new Order in the PENDING_APPROVAL state and publishes an `order-created` event.
 
 2. `Order Line Item Service` consumes the `order-created` event, extracts the list of products and quantities from the order payload, and persists them into the `Order Line Item Table`.
 

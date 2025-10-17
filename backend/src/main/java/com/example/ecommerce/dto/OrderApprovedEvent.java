@@ -4,4 +4,6 @@ import java.math.BigInteger;
 
 import com.example.ecommerce.model.PaymentMethod;
 
-public record InsufficientStockEvent(Long orderId, Long userId, BigInteger amount, PaymentMethod paymentMethod) {}
+public record OrderApprovedEvent(Long orderId, Long userId, BigInteger amount, PaymentMethod paymentMethod) {
+    
+}

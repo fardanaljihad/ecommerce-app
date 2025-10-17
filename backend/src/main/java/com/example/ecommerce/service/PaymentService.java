@@ -65,7 +65,7 @@ public class PaymentService {
             paymentRepository.save(payment);
 
             PaymentAuthorizedEvent authorizedEvent = new PaymentAuthorizedEvent(
-                payment.getId(), event.orderId(), event.amount(), event.orderLineItems());
+                payment.getId(), event.orderId(), event.amount(), payment.getPaymentMethod(), event.orderLineItems());
 
             kafkaTemplate.send("payment-authorized", authorizedEvent);
         } else {
@@ -74,7 +74,7 @@ public class PaymentService {
             paymentRepository.save(payment);
 
             PaymentFailedEvent paymentFailedEvent = new PaymentFailedEvent(
-                payment.getId(), payment.getOrder().getId(), event.reservedStocks(),"INSUFFICIENT_FUNDS");
+                payment.getId(), payment.getOrder().getId(), event.amount(), payment.getPaymentMethod(),event.reservedStocks(),"INSUFFICIENT_FUNDS");
 
             kafkaTemplate.send("payment-failed", paymentFailedEvent);
         }

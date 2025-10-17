@@ -24,7 +24,7 @@ These APIs are responsible for handling client requests — such as placing an o
 ### **Successful Order Creation**
 The happy path for order creation proceeds as follows:
 
-1. `Order Service` creates a new Order in the `CREATED` state and publishes an `order-created` event.  
+1. `Order Service` creates a new Order in the `PENDING_APPROVAL` state and publishes an `order-created` event.  
 2. `Order Line Item Service` consumes the event and saves item details to the `Order Line Item Table`.  
 3. `Product Service` verifies stock availability, reduces inventory, and publishes a `stock-reserved` event.  
 4. `Payment Service` creates a `PENDING` payment record.  
@@ -35,7 +35,7 @@ The happy path for order creation proceeds as follows:
 ### **Insufficient Stock**
 The failed order creation flow caused by insufficient product stock proceeds as follows:
 
-1. `Order Service` creates a new Order in the `CREATED` state and publishes an `order-created` event.  
+1. `Order Service` creates a new Order in the `PENDING_APPROVAL` state and publishes an `order-created` event.  
 2. `Order Line Item Service` records all items in the `Order Line Item Table`.  
 3. `Product Service` detects insufficient stock and publishes `stock-reservation-failed`.  
 4. `Payment Service` creates a `PENDING` payment but cancels it upon receiving `stock-reservation-failed`.  
@@ -45,7 +45,7 @@ The failed order creation flow caused by insufficient product stock proceeds as 
 ### **Payment Failed**
 The failed order creation flow caused by a payment authorization failure proceeds as follows:
 
-1. `Order Service` creates a new Order in the `CREATED` state and publishes an `order-created` event.  
+1. `Order Service` creates a new Order in the `PENDING_APPROVAL` state and publishes an `order-created` event.  
 2. `Order Line Item Service` records item details.  
 3. `Product Service` reserves the required stock and publishes `stock-reserved`.  
 4. `Payment Service` attempts to authorize the payment but fails, publishing `payment-failed`.  

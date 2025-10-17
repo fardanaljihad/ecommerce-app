@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.example.ecommerce.dto.CreateProductRequest;
 import com.example.ecommerce.dto.InsufficientStockEvent;
 import com.example.ecommerce.dto.OrderEvent;
+import com.example.ecommerce.dto.PaymentFailedEvent;
 import com.example.ecommerce.dto.ProductResponse;
 import com.example.ecommerce.dto.SearchProductRequest;
 import com.example.ecommerce.dto.StockReservedEvent;
@@ -61,9 +62,17 @@ public class ProductService {
             kafkaTemplate.send("stock-reserved", successEvent);
         } else {
             reservedStocks.forEach(productRepository::rollbackStock);
-            InsufficientStockEvent failedEvent = new InsufficientStockEvent(event.orderId(), event.userId());
+            InsufficientStockEvent failedEvent = new InsufficientStockEvent(
+                event.orderId(), event.userId(), event.amount(), event.paymentMethod());
             kafkaTemplate.send("stock-reservation-failed", failedEvent);
         }
+    }
+
+    @KafkaListener(topics = "payment-failed", groupId = "product-group")
+    @Transactional
+    public void consumePaymentFailed(PaymentFailedEvent event) {
+
+        event.reservedStocks().forEach(productRepository::rollbackStock);
     }
 
     // Decreases the product stock in the database if enough stock is available

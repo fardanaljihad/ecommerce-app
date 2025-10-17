@@ -3,13 +3,19 @@ package com.example.ecommerce.service;
 import java.util.Date;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.ecommerce.dto.CreateOrderRequest;
 import com.example.ecommerce.dto.CreateOrderResponse;
+import com.example.ecommerce.dto.InsufficientStockEvent;
+import com.example.ecommerce.dto.OrderApprovedEvent;
 import com.example.ecommerce.dto.OrderEvent;
+import com.example.ecommerce.dto.OrderRejectedEvent;
+import com.example.ecommerce.dto.PaymentAuthorizedEvent;
+import com.example.ecommerce.dto.PaymentFailedEvent;
 import com.example.ecommerce.model.Order;
 import com.example.ecommerce.model.OrderStatus;
 import com.example.ecommerce.model.PaymentMethod;
@@ -30,7 +36,7 @@ public class OrderService {
 
     private final UserRepository userRepository;
 
-    private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     
     @Transactional
     public CreateOrderResponse create(CreateOrderRequest request) {
@@ -42,7 +48,7 @@ public class OrderService {
         Order order = new Order();
         order.setUser(user);
         order.setAmount(request.getAmount());
-        order.setStatus(OrderStatus.CREATED);
+        order.setStatus(OrderStatus.PENDING_APPROVAL);
         order.setCreatedAt(new Date());
 
         Order saved = orderRepository.save(order);
@@ -62,5 +68,53 @@ public class OrderService {
             .id(saved.getId())
             .status(saved.getStatus().name())
             .build();
+    }
+
+    @KafkaListener(topics = "payment-authorized", groupId = "order-group")
+    @Transactional
+    public void consumePaymentAuthorized(PaymentAuthorizedEvent event) {
+        Order order = orderRepository.findById(event.orderId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+        order.setStatus(OrderStatus.APPROVED);
+        order.setUpdatedAt(new Date());
+        orderRepository.save(order);
+
+        OrderApprovedEvent approvedEvent = new OrderApprovedEvent(
+            order.getId(), order.getUser().getId(), event.amount(), event.paymentMethod());
+
+        kafkaTemplate.send("order-approved", approvedEvent);
+    }
+
+    @KafkaListener(topics = "stock-reservation-failed", groupId = "order-group")
+    @Transactional
+    public void consumeStockReservationFailed(InsufficientStockEvent event) {
+        Order order = orderRepository.findById(event.orderId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+        order.setStatus(OrderStatus.REJECTED);
+        order.setUpdatedAt(new Date());
+        orderRepository.save(order);
+
+        OrderRejectedEvent rejectedEvent = new OrderRejectedEvent(
+            order.getId(), order.getUser().getId(), event.amount(), event.paymentMethod(), "INSUFFICIENT_STOCK");
+
+        kafkaTemplate.send("order-rejected", rejectedEvent);       
+    }
+
+    @KafkaListener(topics = "payment-failed", groupId = "order-group")
+    @Transactional
+    public void consumePaymentFailed(PaymentFailedEvent event) {
+        Order order = orderRepository.findById(event.orderId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+        order.setStatus(OrderStatus.REJECTED);
+        order.setUpdatedAt(new Date());
+        orderRepository.save(order);
+
+        OrderRejectedEvent rejectedEvent = new OrderRejectedEvent(
+            order.getId(), order.getUser().getId(), event.amount(), event.paymentMethod(), event.reason());
+
+        kafkaTemplate.send("order-rejected", rejectedEvent);       
     }
 }
