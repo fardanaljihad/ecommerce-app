@@ -14,6 +14,7 @@ import com.example.ecommerce.dto.InsufficientStockEvent;
 import com.example.ecommerce.dto.OrderApprovedEvent;
 import com.example.ecommerce.dto.OrderEvent;
 import com.example.ecommerce.dto.OrderRejectedEvent;
+import com.example.ecommerce.dto.OrderResponse;
 import com.example.ecommerce.dto.PaymentAuthorizedEvent;
 import com.example.ecommerce.dto.PaymentFailedEvent;
 import com.example.ecommerce.model.Order;
@@ -116,5 +117,22 @@ public class OrderService {
             order.getId(), order.getUser().getId(), event.amount(), event.paymentMethod(), event.reason());
 
         kafkaTemplate.send("order-rejected", rejectedEvent);       
+    }
+
+    public OrderResponse get(Long id) {
+        Order order = orderRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+        return toOrderResponse(order);
+    }
+
+    private OrderResponse toOrderResponse(Order order) {
+        return OrderResponse.builder()
+            .id(order.getId())
+            .amount(order.getAmount())
+            .status(order.getStatus())
+            .orderLineItems(null)
+            .paymentMethod(order.getPayment().getPaymentMethod())
+            .build();
     }
 }

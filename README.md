@@ -2,12 +2,7 @@
 
 ## Overview
 
-This project is built using an **Event-Driven Architecture (EDA)** pattern combined with a **RESTful API** layer to support e-commerce applications, especially to handle **create order request**.
-
-It demonstrates how multiple backend services communicate **asynchronously via Apache Kafka topics** to handle complex workflows such as order creation, stock validation, and payment authorization.
-
-The backend system provides **RESTful APIs** that serve as the main entry point for users interacting through the e-commerce frontend.
-These APIs are responsible for handling client requests — such as placing an order, viewing products, or checking order status — and then triggering the corresponding event flows within the backend.
+This e-commerce application is built using an **Event-Driven Architecture (EDA)** combined with a **RESTful API** to handle a key process, which is **order creation**. With this architecture, multiple backend services communicate **asynchronously through Apache Kafka**. The **RESTful APIs** serves as the entry point for the e-commerce frontend, handling requests such as placing orders, browsing products, and viewing order history.
 
 ---
 

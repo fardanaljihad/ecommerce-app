@@ -3,7 +3,6 @@ package com.example.ecommerce.controller;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +31,6 @@ public class ProductController {
     private final ProductService productService;
     
     @PostMapping("/products")
-    @PreAuthorize("hasAuthorities('OWNER')")
     public ApiResponse<String> create(@RequestBody CreateProductRequest request) {
         productService.create(request);
         return ApiResponse.<String>builder().data("OK").build();
