@@ -67,9 +67,8 @@ public class OrderService {
             .build();
     }
 
-    @Transactional
     public OrderResponse get(Long id) {
-        Order order = orderRepository.findById(id)
+        Order order = orderRepository.findByIdWithDetails(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 
         return toOrderResponse(order);
