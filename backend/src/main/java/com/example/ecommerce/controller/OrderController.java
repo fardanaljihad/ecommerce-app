@@ -32,6 +32,7 @@ public class OrderController {
 
     @GetMapping("/orders/{id}")
     public ApiResponse<OrderResponse> get(@PathVariable Long id) {
-        return ApiResponse.<OrderResponse>builder().data(null).build();
+        OrderResponse response = orderService.get(id);
+        return ApiResponse.<OrderResponse>builder().data(response).build();
     }
 }

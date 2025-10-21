@@ -1,12 +1,13 @@
-package com.example.ecommerce.service;
+package com.example.ecommerce.consumer;
 
 import java.util.Date;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.ecommerce.dto.InsufficientStockEvent;
@@ -17,25 +18,29 @@ import com.example.ecommerce.dto.PaymentFailedEvent;
 import com.example.ecommerce.dto.StockReservedEvent;
 import com.example.ecommerce.model.Order;
 import com.example.ecommerce.model.Payment;
+import com.example.ecommerce.producer.EventProducer;
 import com.example.ecommerce.repository.OrderRepository;
 import com.example.ecommerce.repository.PaymentRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class PaymentService {
-
+public class PaymentConsumer {
+    
     private final OrderRepository orderRepository;
 
     private final PaymentRepository paymentRepository;
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final EventProducer eventProducer;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentConsumer.class);
     
     @KafkaListener(topics = "order-created", groupId = "payment-group")
     @Transactional
     public void consumeOrderCreated(OrderEvent event) {
+        LOGGER.info("[OrderLineItemConsumer] Received OrderCreated Event: orderId={}", event.orderId());
 
         Order order = orderRepository.findById(event.orderId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
@@ -53,6 +58,7 @@ public class PaymentService {
     @KafkaListener(topics = "stock-reserved", groupId = "payment-group")
     @Transactional
     public void consumeStockReserved(StockReservedEvent event) {
+        LOGGER.info("[OrderLineItemConsumer] Received StockReserved Event: orderId={}", event.orderId());
 
         Payment payment = paymentRepository.findByOrder_Id(event.orderId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found"));
@@ -67,7 +73,8 @@ public class PaymentService {
             PaymentAuthorizedEvent authorizedEvent = new PaymentAuthorizedEvent(
                 payment.getId(), event.orderId(), event.amount(), payment.getPaymentMethod(), event.orderLineItems());
 
-            kafkaTemplate.send("payment-authorized", authorizedEvent);
+            eventProducer.sendMessage("payment-authorized", authorizedEvent);
+
         } else {
             payment.setStatus("FAILED");
             payment.setUpdatedAt(new Date());
@@ -76,13 +83,14 @@ public class PaymentService {
             PaymentFailedEvent paymentFailedEvent = new PaymentFailedEvent(
                 payment.getId(), payment.getOrder().getId(), event.amount(), payment.getPaymentMethod(),event.reservedStocks(),"INSUFFICIENT_FUNDS");
 
-            kafkaTemplate.send("payment-failed", paymentFailedEvent);
+            eventProducer.sendMessage("payment-failed", paymentFailedEvent);
         }
     }
 
     @KafkaListener(topics = "stock-reservation-failed", groupId = "payment-group")
     @Transactional
     public void consumeStockReservationFailed(InsufficientStockEvent event) {
+        LOGGER.info("[OrderLineItemConsumer] Received StockReservationFailed Event: orderId={}", event.orderId());
 
         Payment payment = paymentRepository.findByOrder_Id(event.orderId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found"));
@@ -94,6 +102,6 @@ public class PaymentService {
         PaymentCancelledEvent paymentCancelledEvent = new PaymentCancelledEvent(
             payment.getId(), payment.getOrder().getId(), "INSUFFICIENT_STOCK");
 
-        kafkaTemplate.send("payment-cancelled", paymentCancelledEvent);
+        eventProducer.sendMessage("payment-cancelled", paymentCancelledEvent);
     }
 }

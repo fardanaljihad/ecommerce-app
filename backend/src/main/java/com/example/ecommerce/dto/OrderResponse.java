@@ -1,6 +1,7 @@
 package com.example.ecommerce.dto;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 
 import com.example.ecommerce.model.OrderStatus;
@@ -26,4 +27,8 @@ public class OrderResponse {
     private List<OrderLineItemResponse> orderLineItems;
 
     private PaymentMethod paymentMethod;
+
+    private Date createdAt;
+
+    private Date updatedAt;
 }

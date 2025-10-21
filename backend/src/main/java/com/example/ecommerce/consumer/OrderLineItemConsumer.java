@@ -1,11 +1,13 @@
-package com.example.ecommerce.service;
+package com.example.ecommerce.consumer;
 
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.ecommerce.dto.OrderEvent;
@@ -19,19 +21,22 @@ import com.example.ecommerce.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class OrderLineItemService {
-
+public class OrderLineItemConsumer {
+    
     private final OrderRepository orderRepository;
 
     private final OrderLineItemRepository orderLineItemRepository;
 
     private final ProductRepository productRepository;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderLineItemConsumer.class);
     
     @KafkaListener(topics = "order-created", groupId = "order-line-item-group")
     @Transactional
-    public void consume(OrderEvent event) {
+    public void consumeOrderCreated(OrderEvent event) {
+        LOGGER.info("[OrderLineItemConsumer] Received OrderCreated Event: orderId={}", event.orderId());
 
         Order order = orderRepository.findById(event.orderId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));

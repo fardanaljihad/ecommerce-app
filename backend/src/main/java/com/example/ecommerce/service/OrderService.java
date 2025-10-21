@@ -1,26 +1,22 @@
 package com.example.ecommerce.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.ecommerce.dto.CreateOrderRequest;
 import com.example.ecommerce.dto.CreateOrderResponse;
-import com.example.ecommerce.dto.InsufficientStockEvent;
-import com.example.ecommerce.dto.OrderApprovedEvent;
 import com.example.ecommerce.dto.OrderEvent;
-import com.example.ecommerce.dto.OrderRejectedEvent;
+import com.example.ecommerce.dto.OrderLineItemResponse;
 import com.example.ecommerce.dto.OrderResponse;
-import com.example.ecommerce.dto.PaymentAuthorizedEvent;
-import com.example.ecommerce.dto.PaymentFailedEvent;
 import com.example.ecommerce.model.Order;
 import com.example.ecommerce.model.OrderStatus;
 import com.example.ecommerce.model.PaymentMethod;
 import com.example.ecommerce.model.User;
+import com.example.ecommerce.producer.EventProducer;
 import com.example.ecommerce.repository.OrderRepository;
 import com.example.ecommerce.repository.UserRepository;
 
@@ -37,7 +33,7 @@ public class OrderService {
 
     private final UserRepository userRepository;
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final EventProducer eventProducer;
     
     @Transactional
     public CreateOrderResponse create(CreateOrderRequest request) {
@@ -63,7 +59,7 @@ public class OrderService {
             saved.getCreatedAt(), 
             PaymentMethod.valueOf(request.getPaymentMethod()));
 
-        kafkaTemplate.send("order-created", event);
+        eventProducer.sendMessage("order-created", event);
 
         return CreateOrderResponse.builder()
             .id(saved.getId())
@@ -71,54 +67,7 @@ public class OrderService {
             .build();
     }
 
-    @KafkaListener(topics = "payment-authorized", groupId = "order-group")
     @Transactional
-    public void consumePaymentAuthorized(PaymentAuthorizedEvent event) {
-        Order order = orderRepository.findById(event.orderId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
-
-        order.setStatus(OrderStatus.APPROVED);
-        order.setUpdatedAt(new Date());
-        orderRepository.save(order);
-
-        OrderApprovedEvent approvedEvent = new OrderApprovedEvent(
-            order.getId(), order.getUser().getId(), event.amount(), event.paymentMethod());
-
-        kafkaTemplate.send("order-approved", approvedEvent);
-    }
-
-    @KafkaListener(topics = "stock-reservation-failed", groupId = "order-group")
-    @Transactional
-    public void consumeStockReservationFailed(InsufficientStockEvent event) {
-        Order order = orderRepository.findById(event.orderId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
-
-        order.setStatus(OrderStatus.REJECTED);
-        order.setUpdatedAt(new Date());
-        orderRepository.save(order);
-
-        OrderRejectedEvent rejectedEvent = new OrderRejectedEvent(
-            order.getId(), order.getUser().getId(), event.amount(), event.paymentMethod(), "INSUFFICIENT_STOCK");
-
-        kafkaTemplate.send("order-rejected", rejectedEvent);       
-    }
-
-    @KafkaListener(topics = "payment-failed", groupId = "order-group")
-    @Transactional
-    public void consumePaymentFailed(PaymentFailedEvent event) {
-        Order order = orderRepository.findById(event.orderId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
-
-        order.setStatus(OrderStatus.REJECTED);
-        order.setUpdatedAt(new Date());
-        orderRepository.save(order);
-
-        OrderRejectedEvent rejectedEvent = new OrderRejectedEvent(
-            order.getId(), order.getUser().getId(), event.amount(), event.paymentMethod(), event.reason());
-
-        kafkaTemplate.send("order-rejected", rejectedEvent);       
-    }
-
     public OrderResponse get(Long id) {
         Order order = orderRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
@@ -127,12 +76,18 @@ public class OrderService {
     }
 
     private OrderResponse toOrderResponse(Order order) {
+        List<OrderLineItemResponse> orderLineItems = order.getOrderLineItems().stream()
+            .map(item -> new OrderLineItemResponse(item.getId(), item.getProduct().getName(), item.getQuantity(), item.getPrice()))
+            .toList();
+
         return OrderResponse.builder()
             .id(order.getId())
             .amount(order.getAmount())
             .status(order.getStatus())
-            .orderLineItems(null)
+            .orderLineItems(orderLineItems)
             .paymentMethod(order.getPayment().getPaymentMethod())
+            .createdAt(order.getCreatedAt())
+            .updatedAt(order.getUpdatedAt())
             .build();
     }
 }

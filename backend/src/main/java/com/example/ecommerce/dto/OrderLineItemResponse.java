@@ -17,7 +17,7 @@ public class OrderLineItemResponse {
 
     private String name;
 
-    private String quantity;
+    private Integer quantity;
 
     private BigInteger price;
 }
