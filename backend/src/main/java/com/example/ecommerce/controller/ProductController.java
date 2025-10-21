@@ -45,8 +45,6 @@ public class ProductController {
     @GetMapping("/products")
     public ApiResponse<List<ProductResponse>> search(
         @RequestParam(required = false) String name,
-        @RequestParam(required = false) String brand,
-        @RequestParam(required = false) String category,
         @RequestParam(required = false, defaultValue = "0") Integer page,
         @RequestParam(required = false, defaultValue = "10") Integer size
     ) {
