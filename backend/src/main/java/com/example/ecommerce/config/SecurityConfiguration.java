@@ -33,7 +33,7 @@ public class SecurityConfiguration {
         return http
             .csrf(customizer -> customizer.disable())
             .authorizeHttpRequests(request -> request
-                .requestMatchers("/api/users/register", "/api/auth/login")
+                .requestMatchers("/api/users/register", "/api/auth/login", "/ws/**")
                 .permitAll()
                 .anyRequest().authenticated())
                 .sessionManagement(session -> session
