@@ -18,34 +18,6 @@ This e-commerce application is built using an **Event-Driven Architecture (EDA)*
 
 ### **Successful Order Creation**
 The happy path for order creation proceeds as follows:
+<img width="745" height="571" alt="E-Commerce Application Happy Path" src="https://github.com/user-attachments/assets/93a70329-8c77-4765-a59e-473d1be3b3c4" />
 
-1. `Order Service` creates a new Order in the `PENDING_APPROVAL` state and publishes an `order-created` event.  
-2. `Order Line Item Service` consumes the event and saves item details to the `Order Line Item Table`.  
-3. `Product Service` verifies stock availability, reduces inventory, and publishes a `stock-reserved` event.  
-4. `Payment Service` creates a `PENDING` payment record.  
-5. `Payment Service` consumes `stock-reserved`, authorizes the payment, and publishes `payment-authorized`.  
-6. `Order Service` consumes `payment-authorized`, updates order to `APPROVED`, and publishes `order-approved`.
-
-
-### **Insufficient Stock**
-The failed order creation flow caused by insufficient product stock proceeds as follows:
-
-1. `Order Service` creates a new Order in the `PENDING_APPROVAL` state and publishes an `order-created` event.  
-2. `Order Line Item Service` records all items in the `Order Line Item Table`.  
-3. `Product Service` detects insufficient stock and publishes `stock-reservation-failed`.  
-4. `Payment Service` creates a `PENDING` payment but cancels it upon receiving `stock-reservation-failed`.  
-5. `Order Service` consumes `stock-reservation-failed`, marks order as `REJECTED`, and publishes `order-rejected`.
-
-
-### **Payment Failed**
-The failed order creation flow caused by a payment authorization failure proceeds as follows:
-
-1. `Order Service` creates a new Order in the `PENDING_APPROVAL` state and publishes an `order-created` event.  
-2. `Order Line Item Service` records item details.  
-3. `Product Service` reserves the required stock and publishes `stock-reserved`.  
-4. `Payment Service` attempts to authorize the payment but fails, publishing `payment-failed`.  
-5. `Product Service` releases previously reserved stock.  
-6. `Order Service` updates the Order state to `REJECTED` and publishes `order-rejected`.
-
-
-The detailed event flow descriptions are available [here](https://github.com/fardanaljihad/ecommerce-app/blob/main/backend/README.md).
+Other event flows and their details are available [here](https://github.com/fardanaljihad/ecommerce-app/blob/main/backend/README.md).
