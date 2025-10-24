@@ -6,6 +6,7 @@ import UserRegister from './components/User/UserRegister.jsx';
 import UserLogin from './components/User/UserLogin.jsx';
 import DashboardLayout from './components/DashboardLayout.jsx';
 import UserLogout from './components/User/UserLogout.jsx';
+import ProductList from './components/Product/ProductList.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -16,8 +17,14 @@ createRoot(document.getElementById('root')).render(
           <Route path="/login" element={<UserLogin />} />
         </Route>
         <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route path="products" element={<h1>Products</h1>} />
-          <Route path="users/logout" element={<UserLogout />} />
+
+          <Route path="users">
+            <Route path="logout" element={<UserLogout />} />
+          </Route>
+
+          <Route path="products">
+            <Route index element={<ProductList />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

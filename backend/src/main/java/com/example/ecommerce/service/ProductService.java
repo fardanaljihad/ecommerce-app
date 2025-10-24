@@ -62,7 +62,12 @@ public class ProductService {
             List<Predicate> predicates = new ArrayList<>();
             
             if (Objects.nonNull(request.getName())) {
-                predicates.add(builder.like(root.get("name"), "%" + request.getName() + "%"));
+                predicates.add(
+                    builder.like(
+                        builder.lower(root.get("name")),
+                        "%" + request.getName().trim().toLowerCase() + "%"
+                    )
+                );
             }
 
             return query.where(predicates.toArray(new Predicate[0])).getRestriction();

@@ -25,7 +25,7 @@ export default function UserLogin() {
             const token = responseBody.data.token;
             setToken(token);
             await navigate({
-                pathname: "/dashboard"
+                pathname: "/dashboard/products"
             });
         } else {
             await alertError(responseBody.errors);
