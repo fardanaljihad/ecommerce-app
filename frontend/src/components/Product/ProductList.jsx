@@ -10,6 +10,17 @@ export default function ProductList() {
     const [products, setProducts] = useState([]);
     const [name, setName] = useState("");
     const [page, setPage] = useState(0);
+    const [totalPage, setTotalPage] = useState(0);
+    const [reload, setReload] = useState(false);
+
+    function getPages() {
+        const pages = [];
+        for (let i = 1; i <= totalPage; i++) {
+            pages.push(i);
+        }
+
+        return pages;
+    }
 
     async function fetchProducts() {
         const response = await productList(token, { name, page });
@@ -18,6 +29,8 @@ export default function ProductList() {
 
         if (response.status === 200) {
             setProducts(responseBody.data);
+            setPage(responseBody.pagination.currentPage);
+            setTotalPage(responseBody.pagination.totalPage);
         } else {
             await alertError(responseBody.errors);
         }
@@ -25,13 +38,19 @@ export default function ProductList() {
 
     async function handleSearchProducts(e) {
         e.preventDefault();
-        await fetchProducts();
+        setPage(0);
+        setReload(!reload);
+    }
+
+    async function handlePageChange(page) {
+        setPage(page);
+        setReload(!reload);
     }
 
     useEffect(() => {
         fetchProducts()
             .then(() => console.log("Product fetched"));
-    }, []);
+    }, [reload]);
 
     return <>
         <div className="flex justify-center">
@@ -78,30 +97,46 @@ export default function ProductList() {
                 {/* Pagination */}
                 <div className="mt-10 flex justify-center">
                     <nav className="flex items-center space-x-3 bg-white bg-opacity-90 rounded-3xl shadow-md border border-gray-300 p-3">
-                        <a
-                            href="#"
-                            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-3xl hover:bg-gray-200 transition-all duration-200 flex items-center"
-                        >
-                            <i className="fas fa-chevron-left mr-2" /> Previous
-                        </a>
-                        <a
-                            href="#"
-                            className="px-4 py-2 bg-black text-white rounded-3xl hover:bg-gray-800 transition-all duration-200 font-medium shadow-sm"
-                        >
-                            1
-                        </a>
-                        <a
-                            href="#"
-                            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-3xl hover:bg-gray-200 transition-all duration-200"
-                        >
-                            2
-                        </a>
-                        <a
-                            href="#"
-                            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-3xl hover:bg-gray-200 transition-all duration-200 flex items-center"
-                        >
-                            Next <i className="fas fa-chevron-right ml-2" />
-                        </a>
+                        
+                        {(page + 1) > 1 &&
+                            <a
+                                onClick={() => handlePageChange(page - 1)}
+                                href="#"
+                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-3xl hover:bg-gray-200 transition-all duration-200 flex items-center"
+                            >
+                                <i className="fas fa-chevron-left mr-2" /> Previous
+                            </a>
+                        }
+
+                        {getPages().map(value => {
+                            if (value === (page + 1)) {
+                                return <a
+                                    key={value}
+                                    href="#" onClick={() => handlePageChange(value - 1)}
+                                    className="px-4 py-2 bg-black text-white rounded-3xl hover:bg-gray-800 transition-all duration-200 font-medium shadow-sm"
+                                >
+                                    {value}
+                                </a>
+                            } else {
+                                return <a
+                                    key={value}
+                                    href="#" onClick={() => handlePageChange(value - 1)}
+                                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-3xl hover:bg-gray-200 transition-all duration-200"
+                                >
+                                    {value}
+                                </a>
+                            }
+                        })}
+
+                        {(page + 1) < totalPage &&
+                            <a
+                                onClick={() => handlePageChange(page + 1)}
+                                href="#"
+                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-3xl hover:bg-gray-200 transition-all duration-200 flex items-center"
+                            >
+                                Next <i className="fas fa-chevron-right ml-2" />
+                            </a>
+                        }
                     </nav>
                 </div>
             </div>
