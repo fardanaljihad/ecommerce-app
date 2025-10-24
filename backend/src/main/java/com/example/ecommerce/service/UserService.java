@@ -21,7 +21,7 @@ public class UserService {
     
     private final UserRepository userRepository;
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Transactional
     public void register(RegisterUserRequest request) {
