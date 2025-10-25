@@ -1,10 +1,23 @@
 import { Link } from "react-router";
 import { formatNumber, parseNumber } from "../../libs/utils";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { CartContext } from "../../contexts/CartContext.jsx";
 
 export default function Product({ product }) {
 
+    const { addToCart, removeFromCart } = useContext(CartContext);
     const [quantity, setQuantity] = useState("1");
+    const [inCart, setInCart] = useState(false);
+    
+    function handleAddToCart() {
+        setInCart(true);
+        addToCart(product, quantity);
+    }
+
+    function handleRemoveFromCart() {
+        setInCart(false);
+        removeFromCart(product.id);
+    }
 
     return (
         <div
@@ -50,9 +63,10 @@ export default function Product({ product }) {
                                 setQuantity((prev) => (Number(prev) > 1 ? Number(prev) - 1 : 1))
                             }
                             disabled={product.stock === 0}
-                            className={`w-8 h-8 flex items-center justify-center rounded-md border text-base font-bold shadow-sm ${product.stock === 0
-                                ? "bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed"
-                                : "bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-200"
+                            className={`w-8 h-8 flex items-center justify-center rounded-md border text-base shadow-sm 
+                                ${product.stock === 0 || inCart
+                                    ? "bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed"
+                                    : "bg-gray-50 border-gray-300 text-black hover:bg-gray-200"
                                 }`}
                         >
                             −
@@ -68,9 +82,10 @@ export default function Product({ product }) {
                                 setQuantity(val === "" ? "" : Number(val));
                             }}
                             disabled={product.stock === 0}
-                            className={`w-10 px-2 py-1 rounded-md text-sm text-center border shadow-sm ${product.stock === 0
-                                ? "bg-gray-100 text-gray-300 border-gray-200"
-                                : "bg-white text-gray-800 border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                            className={`w-10 px-2 py-1 rounded-md text-sm text-center border shadow-sm 
+                                ${product.stock === 0 || inCart
+                                    ? "bg-gray-100 text-gray-300 border-gray-200"
+                                    : "bg-white text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400"
                                 }`}
                         />
 
@@ -82,26 +97,41 @@ export default function Product({ product }) {
                                 )
                             }
                             disabled={product.stock === 0}
-                            className={`w-8 h-8 flex items-center justify-center rounded-md border text-base font-bold shadow-sm ${product.stock === 0
-                                ? "bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed"
-                                : "bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-200"
+                            className={`w-8 h-8 flex items-center justify-center rounded-md border text-base shadow-sm 
+                                ${product.stock === 0 || inCart
+                                    ? "bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed"
+                                    : "bg-gray-50 border-gray-300 text-black hover:bg-gray-200"
                                 }`}
                         >
                             +
                         </button>
                     </div>
 
-                    <button
-                        onClick={() => handleAddToCart(product, quantity)}
-                        disabled={product.stock === 0}
-                        className={`px-3 py-2 rounded-md text-sm font-semibold flex items-center justify-center shadow-sm ${product.stock === 0
-                            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                            : "bg-black text-white hover:bg-gray-800"
-                            }`}
-                    >
-                        <i className="fas fa-shopping-cart text-[12px] mr-2"></i>
-                        Add
-                    </button>
+                    {!inCart && (
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={product.stock === 0}
+                            className={`px-3 py-2 rounded-md text-xs flex items-center justify-center shadow-sm 
+                                ${product.stock === 0
+                                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                    : "bg-gray-50 border-black text-black hover:bg-gray-200 border"
+                                }`}
+                        >
+                            <i className="fas fa-shopping-cart text-[12px] mr-2"></i>
+                            Add
+                        </button>
+                    )}
+
+                    {inCart && (
+                        <button
+                            onClick={handleRemoveFromCart}
+                            disabled={product.stock === 0}
+                            className="px-3 py-2 rounded-md text-xs flex items-center justify-center shadow-sm
+                                bg-white border border-red-500 text-red-500 hover:bg-red-50 hover:border-red-600"
+                        >
+                            Remove
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

@@ -7,26 +7,29 @@ import UserLogin from './components/User/UserLogin.jsx';
 import DashboardLayout from './components/DashboardLayout.jsx';
 import UserLogout from './components/User/UserLogout.jsx';
 import ProductList from './components/Product/ProductList.jsx';
+import CartProvider from './contexts/CartProvider.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/register" element={<UserRegister />} />
-          <Route path="/login" element={<UserLogin />} />
-        </Route>
-        <Route path="/dashboard" element={<DashboardLayout />}>
-
-          <Route path="users">
-            <Route path="logout" element={<UserLogout />} />
+      <CartProvider>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/register" element={<UserRegister />} />
+            <Route path="/login" element={<UserLogin />} />
           </Route>
+          <Route path="/dashboard" element={<DashboardLayout />}>
 
-          <Route path="products">
-            <Route index element={<ProductList />} />
+            <Route path="users">
+              <Route path="logout" element={<UserLogout />} />
+            </Route>
+
+            <Route path="products">
+              <Route index element={<ProductList />} />
+            </Route>
           </Route>
-        </Route>
-      </Routes>
+        </Routes>
+      </CartProvider>
     </BrowserRouter>
   </StrictMode>,
 )

@@ -1,6 +1,11 @@
 import { Link, Outlet } from "react-router";
+import { CartContext } from "../contexts/CartContext.jsx";
+import { useContext } from "react";
 
 export default function DashboardLayout() {
+
+    const { cartItems } = useContext(CartContext);
+
     return <>
         <div className="bg-white min-h-screen flex flex-col">
             <header className="bg-white border-b border-gray-300 shadow-md">
@@ -17,10 +22,19 @@ export default function DashboardLayout() {
                             <li>
                                 <Link
                                     to="/dashboard/users/cart"
-                                    className="text-black hover:text-gray-500 flex items-center transition-colors duration-200"
+                                    className="group flex items-center text-black hover:text-gray-500 transition-colors duration-200"
                                 >
-                                    <i className="fas fa-cart-shopping mr-2"></i>
-                                    <span>Cart</span>
+                                    <div className="relative mr-2">
+                                        <i className="fas fa-cart-shopping text-2xl transition-colors duration-200 group-hover:text-gray-500"></i>
+
+                                        {cartItems.length > 0 && (
+                                            <span className="absolute -top-2.5 -right-2.5 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full transition-colors duration-200 group-hover:bg-red-400">
+                                                {cartItems.length}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <span className="transition-colors duration-200 group-hover:text-gray-500">Cart</span>
                                 </Link>
                             </li>
 
@@ -29,7 +43,7 @@ export default function DashboardLayout() {
                                     to="/dashboard/users/logout"
                                     className="text-black hover:text-gray-500 flex items-center transition-colors duration-200"
                                 >
-                                    <i className="fas fa-sign-out-alt mr-2"></i>
+                                    <i className="fas fa-sign-out-alt mr-2 text-2xl"></i>
                                     <span>Logout</span>
                                 </Link>
                             </li>
