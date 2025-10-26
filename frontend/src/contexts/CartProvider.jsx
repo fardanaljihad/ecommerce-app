@@ -12,8 +12,12 @@ export default function CartProvider({ children }) {
         setCartItems((prev) => prev.filter((item) => item.id !== id));
     }
 
+    function clearCart() {
+        setCartItems([]);
+    }
+
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, removeFromCart }}>
+        <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart }}>
             {children}
         </CartContext.Provider>
     );

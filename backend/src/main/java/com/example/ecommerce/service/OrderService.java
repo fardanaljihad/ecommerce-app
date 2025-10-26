@@ -48,7 +48,7 @@ public class OrderService {
     public CreateOrderResponse create(CreateOrderRequest request) {
         validationService.validate(request);
 
-        User user = userRepository.findById(request.getUserId())
+        User user = userRepository.findByUsername(request.getUsername())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         Order order = new Order();

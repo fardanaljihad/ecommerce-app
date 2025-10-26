@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class CreateOrderRequest {
 
     @NotNull
-    private Long userId;
+    private String username;
     
     @NotNull
     private BigInteger amount;
