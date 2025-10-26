@@ -8,6 +8,8 @@ import DashboardLayout from './components/DashboardLayout.jsx';
 import UserLogout from './components/User/UserLogout.jsx';
 import ProductList from './components/Product/ProductList.jsx';
 import CartProvider from './contexts/CartProvider.jsx';
+import Cart from './components/Cart/Cart.jsx';
+import Checkout from './components/Order/Checkout.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -21,6 +23,8 @@ createRoot(document.getElementById('root')).render(
           <Route path="/dashboard" element={<DashboardLayout />}>
 
             <Route path="users">
+              <Route path="cart" element={<Cart />} />
+              <Route path="checkout" element={<Checkout />} />
               <Route path="logout" element={<UserLogout />} />
             </Route>
 

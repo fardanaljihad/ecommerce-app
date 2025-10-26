@@ -5,13 +5,13 @@ import { CartContext } from "../../contexts/CartContext.jsx";
 
 export default function Product({ product }) {
 
-    const { addToCart, removeFromCart } = useContext(CartContext);
+    const { cartItems, addToCart, removeFromCart } = useContext(CartContext);
     const [quantity, setQuantity] = useState("1");
-    const [inCart, setInCart] = useState(false);
+    const [inCart, setInCart] = useState(cartItems.some((item) => item.id === product.id));
     
     function handleAddToCart() {
         setInCart(true);
-        addToCart(product, quantity);
+        addToCart(product, Number(quantity));
     }
 
     function handleRemoveFromCart() {

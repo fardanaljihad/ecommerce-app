@@ -5,11 +5,11 @@ export default function CartProvider({ children }) {
     const [cartItems, setCartItems] = useState([]);
 
     function addToCart(product, quantity) {
-        setCartItems((prev) => [...prev, {product, quantity}]);
+        setCartItems((prev) => [...prev, {...product, stockReserved: quantity}]);
     }
 
     function removeFromCart(id) {
-        setCartItems((prev) => prev.filter((item) => item.product.id !== id));
+        setCartItems((prev) => prev.filter((item) => item.id !== id));
     }
 
     return (
