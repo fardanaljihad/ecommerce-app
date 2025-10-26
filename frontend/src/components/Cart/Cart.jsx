@@ -19,6 +19,10 @@ export default function Cart() {
             <h1 className="text-2xl font-semibold mb-6">My Cart</h1>
 
             <div className="flex flex-col gap-4">
+                {cartItems.length === 0 && (
+                    <p className="text-gray-500 text-center italic">Your cart is empty.</p>
+                )}
+
                 {cartItems.map((item) => (
                     <div
                         key={item.id}
@@ -74,7 +78,8 @@ export default function Cart() {
                 
                 <button
                     onClick={() => navigate("/dashboard/users/checkout")}
-                    className="px-6 py-3 rounded-3xl text-sm font-semibold text-white bg-blue-600 text-white hover:bg-blue-500"
+                    className={`px-6 py-3 rounded-3xl text-sm font-semibold text-white
+                        ${cartItems.length === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-500"}`}
                 >
                     CHECKOUT
                 </button>

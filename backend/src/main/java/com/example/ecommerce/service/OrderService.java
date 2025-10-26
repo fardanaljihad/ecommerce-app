@@ -87,9 +87,11 @@ public class OrderService {
         Specification<Order> specification = (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (Objects.nonNull(request.getUserId())) {
-                predicates.add(builder.equal(root.get("user").get("id"), request.getUserId()));
+            if (Objects.nonNull(request.getUsername())) {
+                predicates.add(builder.equal(root.get("user").get("username"), request.getUsername()));
             }
+
+            query.orderBy(builder.desc(root.get("createdAt")));
 
             return query.where(predicates.toArray(new Predicate[0])).getRestriction();
         };

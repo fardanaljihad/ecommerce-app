@@ -27,6 +27,16 @@ export default function DashboardLayout() {
                         <ul className="flex space-x-6">
                             <li>
                                 <Link
+                                    to="/dashboard/users/order"
+                                    className="text-black hover:text-gray-500 flex items-center transition-colors duration-200"
+                                >
+                                    <i className="fas fa-receipt mr-2 text-2xl"></i>
+                                    <span>Order</span>
+                                </Link>
+                            </li>
+
+                            <li>
+                                <Link
                                     to="/dashboard/users/cart"
                                     className="group flex items-center text-black hover:text-gray-500 transition-colors duration-200"
                                 >

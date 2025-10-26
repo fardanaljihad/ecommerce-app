@@ -45,12 +45,12 @@ public class OrderController {
 
     @GetMapping("/orders")
     public ApiResponse<List<OrderResponse>> search(
-        @RequestParam(required = false) Long userId,
+        @RequestParam(required = false) String username,
         @RequestParam(required = false, defaultValue = "0") Integer page,
         @RequestParam(required = false, defaultValue = "10") Integer size
     ) {
         SearchOrderRequest request = SearchOrderRequest.builder()
-            .userId(userId)
+            .username(username)
             .page(page)
             .size(size)
             .build();

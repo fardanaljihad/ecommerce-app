@@ -68,52 +68,48 @@ export default function Checkout() {
             <div className="mb-6 border rounded-lg shadow-sm p-4 bg-white">
                 <h2 className="text-xl text-center font-semibold mb-4 border-b pb-2">--- INVOICE ---</h2>
 
-                {cartItems.length === 0 ? (
-                    <p className="text-gray-500">Your cart is empty.</p>
-                ) : (
-                    <div className="flex flex-col gap-3">
-                        {cartItems.map((item) => (
-                            <div
-                                key={item.id}
-                                className="flex justify-between border-b pb-2 last:border-b-0"
-                            >
-                                <div className="flex flex-col">
-                                    <span className="font-medium">{item.name}</span>
-                                    <span className="text-sm text-gray-500">
-                                        Quantity: {formatNumber(item.stockReserved)}
-                                    </span>
-                                </div>
-                                <div className="text-right font-medium">
-                                    Rp{formatNumber(item.price * item.stockReserved)}
-                                </div>
+                <div className="flex flex-col gap-3">
+                    {cartItems.map((item) => (
+                        <div
+                            key={item.id}
+                            className="flex justify-between border-b pb-2 last:border-b-0"
+                        >
+                            <div className="flex flex-col">
+                                <span className="font-medium">{item.name}</span>
+                                <span className="text-sm text-gray-500">
+                                    Quantity: {formatNumber(item.stockReserved)}
+                                </span>
                             </div>
-                        ))}
-
-                        <div className="flex justify-between mt-4 text-black font-medium">
-                            <span>Subtotal</span>
-                            <span>Rp{formatNumber(subtotal)}</span>
-                        </div>
-                        <div className="flex justify-between text-gray-600">
-                            <span>Service Fee</span>
-                            <span>Rp{formatNumber(serviceFee)}</span>
-                        </div>
-                        <div className="flex justify-between text-gray-600">
-                            <span>Tax (PPN 11%)</span>
-                            <span>Rp{formatNumber(Math.round(tax))}</span>
-                        </div>
-                        {discount > 0 && (
-                            <div className="flex justify-between text-gray-600">
-                                <span>Discount</span>
-                                <span>- Rp{formatNumber(discount)}</span>
+                            <div className="text-right font-medium">
+                                Rp{formatNumber(item.price * item.stockReserved)}
                             </div>
-                        )}
-
-                        <div className="flex justify-between mt-2 text-lg font-semibold border-t pt-2">
-                            <span>Total</span>
-                            <span>Rp{formatNumber(total)}</span>
                         </div>
+                    ))}
+
+                    <div className="flex justify-between mt-4 text-black font-medium">
+                        <span>Subtotal</span>
+                        <span>Rp{formatNumber(subtotal)}</span>
                     </div>
-                )}
+                    <div className="flex justify-between text-gray-600">
+                        <span>Service Fee</span>
+                        <span>Rp{formatNumber(serviceFee)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                        <span>Tax (PPN 11%)</span>
+                        <span>Rp{formatNumber(Math.round(tax))}</span>
+                    </div>
+                    {discount > 0 && (
+                        <div className="flex justify-between text-gray-600">
+                            <span>Discount</span>
+                            <span>- Rp{formatNumber(discount)}</span>
+                        </div>
+                    )}
+
+                    <div className="flex justify-between mt-2 text-lg font-semibold border-t pt-2">
+                        <span>Total</span>
+                        <span>Rp{formatNumber(total)}</span>
+                    </div>
+                </div>
             </div>
 
             <div className="mb-6 border rounded-lg shadow-sm p-4 bg-white">

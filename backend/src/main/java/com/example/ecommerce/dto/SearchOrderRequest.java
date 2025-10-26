@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SearchOrderRequest {
     
-    private Long userId;
+    private String username;
 
     @NotNull
     private Integer page;

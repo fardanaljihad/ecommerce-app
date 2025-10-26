@@ -14,3 +14,20 @@ export const getUsername = (token) => {
     const payload = JSON.parse(payloadJson);
     return payload.sub;
 }
+
+export const formatDate = (timestamp, locale = "id-ID", options) => {
+    if (!timestamp) return "-";
+    const date = new Date(timestamp);
+    return date.toLocaleDateString(locale, options);
+}
+
+export function formatPaymentMethod(method) {
+    switch (method) {
+        case "BANK_TRANSFER":
+            return "Bank Transfer";
+        case "CREDIT_CARD":
+            return "Credit Card";
+        default:
+            return method;
+    }
+}
