@@ -146,10 +146,17 @@ export default function Checkout() {
                 </div>
             </div>
 
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-between mt-4">
+                <button
+                    onClick={() => navigate("/dashboard/users/cart")}
+                    className="px-6 py-3 rounded-3xl font-semibold text-gray-700 border border-gray-300 hover:bg-gray-50 transition-all"
+                >
+                    Back to Cart
+                </button>
+
                 <button
                     onClick={handleConfirmPay}
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all"
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-3xl transition-all"
                 >
                     Confirm & Pay
                 </button>

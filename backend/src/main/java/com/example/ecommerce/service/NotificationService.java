@@ -11,8 +11,13 @@ public class NotificationService {
     
     private final SimpMessagingTemplate messagingTemplate;
 
-    public void sendToUser(Long userId, String message) {
-        String destination = "/user/notifications/" + userId;
+    public void sendSuccessToUser(String username, String message) {
+        String destination = "/user/notifications/success/" + username;
+        messagingTemplate.convertAndSend(destination, message);
+    }
+
+    public void sendFailToUser(String username, String message) {
+        String destination = "/user/notifications/fail/" + username;
         messagingTemplate.convertAndSend(destination, message);
     }
 }

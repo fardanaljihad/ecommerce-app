@@ -1,10 +1,16 @@
 import { Link, Outlet } from "react-router";
 import { CartContext } from "../contexts/CartContext.jsx";
 import { useContext } from "react";
+import { NotificationSocket } from "./NotificationSocket.jsx";
+import { ToastContainer } from "react-toastify";
+import { useLocalStorage } from "react-use";
+import { getUsername } from "../libs/utils.js";
 
 export default function DashboardLayout() {
 
     const { cartItems } = useContext(CartContext);
+    const [token, _] = useLocalStorage("token", "");
+    const username = getUsername(token);
 
     return <>
         <div className="bg-white min-h-screen flex flex-col">
@@ -53,9 +59,11 @@ export default function DashboardLayout() {
             </header>
 
             <main className="container mx-auto px-4 py-8 flex-grow">
+                <NotificationSocket username={username} />
+                <ToastContainer />
 
                 <Outlet />
-
+                
                 <div className="mt-10 mb-6 text-center text-gray-500 text-sm">
                     <p>© 2025 E-CommerceLabs. All rights reserved.</p>
                 </div>

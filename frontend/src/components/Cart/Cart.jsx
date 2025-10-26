@@ -67,14 +67,14 @@ export default function Cart() {
             <div className="mt-5 border-t pt-4 flex items-center justify-between">
                 <button
                     onClick={() => navigate("/dashboard/products")}
-                    className="px-5 py-3 rounded-lg text-sm font-semibold text-gray-700 border border-gray-300 hover:bg-gray-50 transition-all"
+                    className="px-5 py-3 rounded-3xl text-sm font-semibold text-gray-700 border border-gray-300 hover:bg-gray-50 transition-all"
                 >
                     CONTINUE SHOPPING
                 </button>
                 
                 <button
                     onClick={() => navigate("/dashboard/users/checkout")}
-                    className="px-6 py-3 rounded-lg text-sm font-semibold text-white bg-blue-600 text-white hover:bg-blue-500"
+                    className="px-6 py-3 rounded-3xl text-sm font-semibold text-white bg-blue-600 text-white hover:bg-blue-500"
                 >
                     CHECKOUT
                 </button>
